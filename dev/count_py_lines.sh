@@ -1,0 +1,1 @@
+find . -name '*.py' ! -path "./dev/*" | xargs wc -l
