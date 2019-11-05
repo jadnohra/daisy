@@ -14,7 +14,7 @@ class SequenceCurve(CurveBase):
     def _normalize_t(self, index, frag_t):
         n = len(self.curve_sequence)
         return float(index+frag_t)/n
-        
+
     def _denormalize_t(self, t):
         n = len(self.curve_sequence)
         index = np.clip(int(np.floor(t*n)), 0, n-1)
@@ -29,7 +29,9 @@ class SequenceCurve(CurveBase):
             vec = np.subtract(curve.t_to_point(t), pt_world)
             return np.dot(vec, vec)
         closest_ts = [x.closest_t(pt_world) for x in self.curve_sequence]
+        print(closest_ts)
         closest_distsqs = [dist_sq(i, closest_ts[i]) for i in range(len(closest_ts))]
+        print(closest_distsqs)
         index = np.argmin(closest_distsqs)
         return self._normalize_t(index, closest_ts[index])
 
@@ -43,14 +45,14 @@ class SequenceCurve(CurveBase):
 
     def get_length(self):
         return self.length
-        
+
     def length_to_dt(self, t, length):
         rest_length = length
         end_index, end_t = self._denormalize_t(t)
         while rest_length > 0.0 and end_index < len(self.curve_sequence):
             frag_max_length = self.curve_sequence[end_index].dt_to_length(end_t, 1.0-end_t)
             if frag_max_length >= rest_length:
-                end_t = end_t + self.curve_sequence[end_index].length_to_dt(end_t, rest_length) 
+                end_t = end_t + self.curve_sequence[end_index].length_to_dt(end_t, rest_length)
                 break
             else:
                 end_index = end_index + 1
