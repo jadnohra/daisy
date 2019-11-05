@@ -1,0 +1,10 @@
+mpmath==1.1.0
+numpy==1.16.4
+parse==1.12.0
+py-spy==0.1.11
+pybullet==2.5.0
+PyOpenGL==3.1.0
+PyOpenGL-accelerate==3.1.0
+python-statemachine==0.7.1
+Shapely==1.6.4.post2
+sympy==1.4
