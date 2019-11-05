@@ -3,7 +3,7 @@ from .curve import CurveBase
 
 
 class ArcCurve(CurveBase):
-    def __init__(self, id, rgb, 
+    def __init__(self, id, rgb,
                  world_start, world_end,
                  world_arc_center, arc_rad,
                  arc_angle_start, arc_angle_end,
@@ -26,7 +26,10 @@ class ArcCurve(CurveBase):
         arc_delta = self.arc_path_delta
         theta = np.arctan2(-shift_center[1], -shift_center[0])
         theta = theta + 2*np.pi if theta < 0 else theta
-        t = (theta - self.arc_angle_start) / arc_delta
+        # TODO this is wrong, must take 'shortest path'
+        t = (theta - self.arc_angle_start)
+        #t = (theta - self.arc_angle_start) / arc_delta
+        #print(theta/3.14*180, self.arc_angle_start /3.14*180, self.arc_angle_end /3.14*180, t, (theta - self.arc_angle_start)/3.14*180)
         if t < 0.0 or t > 1.0:
             dist_start = np.linalg.norm(np.subtract(pt_world, self.world_start))
             dist_end = np.linalg.norm(np.subtract(pt_world, self.world_end))
@@ -35,6 +38,7 @@ class ArcCurve(CurveBase):
             return t
 
     def t_to_point(self, t):
+        # TODO this is wrong, must take 'shortest path'
         phi = self.arc_angle_start + self.arc_path_delta * t
         local_arc_pt = [x * self.arc_rad for x in
                         [np.cos(phi), np.sin(phi)]]
