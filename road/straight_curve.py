@@ -44,7 +44,7 @@ class StraightCurve(CurveBase):
             t = np.amax(roots)
             if t <= 1.0:
                 end_pt = self.t_to_point(t)
-                return self.ChangeLangeSolution('done', StraightCurve(None, self.rgb, src_pt, end_pt), t)
+                return self.ChangeLaneSolution('done', StraightCurve(None, self.rgb, src_pt, end_pt), t)
             else:
                 unclipped_end_pt = np.add(self.world_start, np.multiply(d, t))
                 normal_line = [self.world_end, self.t_to_normal(1.0)]
@@ -52,8 +52,8 @@ class StraightCurve(CurveBase):
                                          [src_pt, np.subtract(unclipped_end_pt, src_pt)])[0]
                 end_pt = np.add(normal_line[0], np.multiply(normal_line[1], t))
                 if np.linalg.norm(np.subtract(end_pt, src_pt)) == 0:
-                    return self.ChangeLangeSolution('chain')
-                return self.ChangeLangeSolution('chain', StraightCurve(None, self.rgb, src_pt, end_pt))
+                    return self.ChangeLaneSolution('chain')
+                return self.ChangeLaneSolution('chain', StraightCurve(None, self.rgb, src_pt, end_pt))
         else:
-            self.ChangeLangeSolution('unreachable')
+            self.ChangeLaneSolution('unreachable')
         

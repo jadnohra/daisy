@@ -10,10 +10,11 @@ def _link_curve_seq(curve_seq):
         curve_seq[i].add_incoming_curve(curve_seq[i-1])
 
 
-def build_sampled_interpolation_curve(curve_0, curve_1, seg_length=2.0, 
-                                        t0_start=0.0, t0_end=1.0, 
+def build_sampled_interpolation_curve(curve_0, curve_1, seg_length=2.0,
+                                        t0_start=0.0, t0_end=1.0,
                                         t1_start=0.0, t1_end=1.0):
     ts = curve_0.sample_t(seg_length, t0_start, t0_end)
+    print(seg_length, t0_start, t0_end, ts)
     pts = []
     for t in ts:
         interp = (t-t0_start) / (t0_end-t0_start)
