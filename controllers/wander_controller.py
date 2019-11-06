@@ -1,7 +1,8 @@
 import random
 from util.road import solve_lane_change_trajectory
 from util.road import LaneChangeTrajectorySolution
-from road.sequence_curve_builder import build_sampled_interpolation_curve
+from road.curve import CurveBase
+from road.sequence_curve_builder import build_sampled_interpolation_curve, build_curve_by_length
 
 class WanderController:
     def __init__(self):
@@ -100,10 +101,14 @@ class WanderController:
             start_pt = self.car.spatial.pos_road
             speed = max(self.car.dynamics.get_speed(), 5.0)
             end_t = loc.t + loc.curve.length_to_dt(loc.t, speed*duration)
-            interp_curve = build_sampled_interpolation_curve(loc.curve, initial_target_lane, loc.t, end_t, loc.t, end_t)
-            solution = LaneChangeTrajectorySolution()
+            print(speed*duration, loc.t, end_t)
+            # TODO use build_curve_by_length for both lanes to create boundary lanes of the right length!
+            interp_curve = build_sampled_interpolation_curve(loc.curve, initial_target_lane, 1.0, loc.t, end_t, loc.t, end_t)
+            link_solution = CurveBase.ChangeLaneSolution(None, initial_target_lane, end_t)
+            solution = LaneChangeTrajectorySolution(interp_curve.get_curve_sequence(), initial_target_lane, link_solution)
+            print(interp_curve.get_curve_sequence())
             solution.link_to_last_target()
-            return solution
+            return interp_curve
         else:
             return None
 
@@ -112,10 +117,15 @@ class WanderController:
         if self._command_change_lane:
             self._command_change_lane = False
             if True:
-                #solution = self._plan_lane_change(2.0)
-                solution = self._interpolate_lane_change(2.0)
-                if solution is not None:
-                    self._reset_with_start_fragment(solution.trajectory)
+                if False:
+                    solution = self._plan_lane_change(2.0)
+                    if solution is not None:
+                        self._reset_with_start_fragment(solution.trajectory)
+                else:
+                    trajectory = self._interpolate_lane_change(2.0)
+                    if trajectory is not None:
+                        self._reset_with_start_fragment(trajectory)
+
             else:
                 self.car.act.set_mode(self.car.act.Mode.CHANGE_LANE)
 

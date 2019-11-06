@@ -2,12 +2,12 @@ import numpy as np
 
 
 class CurveBase:
-    class ChangeLangeSolution:
+    class ChangeLaneSolution:
         def __init__(self, status, curve=None, join_t=None):
             self.status = status
             self.curve = curve
             self.join_t = join_t
-            
+
     def __init__(self, id, rgb):
         self.id = id
         self.rgb = rgb
@@ -24,10 +24,10 @@ class CurveBase:
 
     def add_incoming_curve(self, source):
         self.incoming_curves.append(source)
-        
+
     def get_outgoing_lane_curves(self):
         return self.outgoing_lane_curves
-        
+
     def get_incoming_lane_curves(self):
         return self.incoming_lane_curves
 
@@ -39,7 +39,7 @@ class CurveBase:
 
     def add_incoming_lane_curve(self, source):
         self.incoming_lane_curves.append(source)
-        
+
     def t_to_normal(self, t):
         tang = self.t_to_tangent(t)
         return [-tang[1], tang[0]]
@@ -56,7 +56,7 @@ class CurveBase:
 
     def solve_lane_change_curve(self, src_pt, speed, lane_change_duration):
         return None
-        
+
     def sample_t(self, seg_length, t0=0.0, t1=1.0):
         t = t0
         ts = [t]
@@ -65,7 +65,6 @@ class CurveBase:
             t = min(t+self.length_to_dt(t, avail_length), t1)
             ts.append(t)
         return ts
-        
+
     def sample_pts(self, seg_length, t0=0.0, t1=1.0):
         return [self.t_to_point(t) for t in self.sample_t(seg_length, t0, t1)]
-    
