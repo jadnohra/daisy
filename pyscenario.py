@@ -36,7 +36,6 @@ class PyScenario:
             
         def add_sampled_trajectory(self, trajectory, rgb, seg_length=2.0, ttl=0.0):
             sampled_pts = [self.coord.road_2d_to_spatial_3d_pt(x) for x in trajectory.sample_pts(seg_length)]
-            print('WWWW', sampled_pts)
             self.add_point_group(sampled_pts, rgb, ttl)
             
         def add_trajectory(self, trajectory, ttl=0.0, sampled=False):

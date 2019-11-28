@@ -102,14 +102,13 @@ class WanderController:
             speed = max(self.car.dynamics.get_speed(), 5.0)
             distance = speed*duration
             end_t = loc.t + loc.curve.length_to_dt(loc.t, speed*duration)
-            print(speed, duration, speed*duration, loc.t, end_t)
             source_lane_traj = build_curve_by_length(loc.curve, loc.t, distance)
-            self.car.scenario.dbg_draw.add_sampled_trajectory(source_lane_traj, [1,0,0], ttl=100)
-            print(source_lane_traj, start_pt, source_lane_traj.t_to_point(0), source_lane_traj.t_to_point(1))
-            target_lane_traj = build_curve_by_length(target_lane, loc.t, distance)
-            self.car.scenario.dbg_draw.add_sampled_trajectory(target_lane_traj, [1,0,0], ttl=100)
-            lane_change_traj = build_sampled_interpolation_curve(source_lane_traj, target_lane_traj)
-            self.car.scenario.dbg_draw.add_sampled_trajectory(lane_change_traj, [1,0,0], ttl=100)
+            #self.car.scenario.dbg_draw.add_sampled_trajectory(source_lane_traj, [1,0,0], ttl=500)
+            # Next TODO: build_curve_until (t on parallel lane), because the lanes don't have the same length!
+            target_lane_traj = build_curve_by_length(target_lane, loc.t, distance, link_outgoing=True)
+            #self.car.scenario.dbg_draw.add_sampled_trajectory(target_lane_traj, [1,0,0], ttl=500)
+            lane_change_traj = build_sampled_interpolation_curve(source_lane_traj, target_lane_traj, copy_outgoing_curve=target_lane_traj)
+            #self.car.scenario.dbg_draw.add_sampled_trajectory(lane_change_traj, [1,0,0], ttl=500)
             return lane_change_traj
         else:
             return None
@@ -123,7 +122,7 @@ class WanderController:
                     if solution is not None:
                         self._reset_with_start_fragment(solution.trajectory)
                 else:
-                    trajectory = self._interpolate_lane_change(4.0)
+                    trajectory = self._interpolate_lane_change(2.0)
                     if trajectory is not None:
                         self._reset_with_start_fragment([trajectory])
 
@@ -149,8 +148,8 @@ class WanderController:
             self._add_tail_curve(next_curve)
         if self._has_modifs:
             if self._is_hard_modif:
-                #print('reset', [x.id for x in self.curve_sequence])
+                # print('reset', [x.id for x in self.curve_sequence])
                 self.car.trajectory.reset_curve_sequence(self.curve_sequence)
             else:
-                #print('update', [x.id for x in self.curve_sequence])
+                # print('update', [x.id for x in self.curve_sequence])
                 self.car.trajectory.update_curve_sequence(self.curve_sequence)

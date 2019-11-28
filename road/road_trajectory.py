@@ -57,7 +57,7 @@ class RoadTrajectory:
                 curr_loc = self.get_location()
                 dt = curr_loc.curve.length_to_dt(curr_loc.t, rest_length)
                 new_t = curr_loc.t + dt
-                if new_t > 1.0:
+                if new_t >= 1.0:
                     clipped_dt = 1.0 - curr_loc.t
                     rest_length = rest_length - curr_loc.curve.dt_to_length(curr_loc.t, clipped_dt)
                     if self.curve_index + 1 < len(self.parent.curve_sequence):
