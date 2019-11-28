@@ -24,42 +24,51 @@ class PyScenario:
         def add_point(self, pos):
             self.points.append(pos)
         
-        def add_point_group(self, points, rgb):
-            self.point_groups.append((points, rgb))
+        def add_point_group(self, points, rgb, ttl=0.0):
+            self.point_groups.append((points, rgb, ttl))
         
         def add_line(self, pt_from, pt_to):
             self.lines.append((pt_from, pt_to))
             
-        def add_line_group(self, lines_endpoints, rgb):
+        def add_line_group(self, lines_endpoints, rgb, ttl=0.0):
             if len(lines_endpoints):
-                self.line_groups.append((lines_endpoints, rgb))
+                self.line_groups.append((lines_endpoints, rgb, ttl))
             
-        def add_trajectory(self, trajectory):
+        def add_sampled_trajectory(self, trajectory, rgb, seg_length=2.0, ttl=0.0):
+            sampled_pts = [self.coord.road_2d_to_spatial_3d_pt(x) for x in trajectory.sample_pts(seg_length)]
+            print('WWWW', sampled_pts)
+            self.add_point_group(sampled_pts, rgb, ttl)
+            
+        def add_trajectory(self, trajectory, ttl=0.0, sampled=False):
             curve_verts = []
             for i, curve in enumerate(trajectory):
                 verts = []; lines = [];
                 # TODO optimize
                 calc_curve_segments(curve, verts, lines, vert_func=self.coord.road_2d_to_spatial_3d_pt)
                 curve_verts.extend(curve_segments_to_vert_pair_list(verts, lines))
-            self.add_line_group(curve_verts, [1.0, 0.0, 1.0])
+            self.add_line_group(curve_verts, [1.0, 0.0, 1.0], ttl)
             
         def clear(self):
             self.points.clear()
+            ttl_point_groups = [(x[0], x[1], x[2]-1) for x in self.point_groups if x[2] > 1]
             self.point_groups.clear()
+            self.point_groups = ttl_point_groups
             self.lines.clear()
+            ttl_line_groups = [(x[0], x[1], x[2]-1) for x in self.line_groups if x[2] > 1]
             self.line_groups.clear()
+            self.line_groups = ttl_line_groups
             
         def flush(self, col_func):
             rgb_white = [1,1,1]
             col_func(*rgb_white)
             # dbg_draw_eng.scene_draw_lines(self.points, dim=5.0)
             dbg_draw_eng.scene_draw_points_pos(self.points, dim=5.0)
-            for pts, rgb in self.point_groups:
+            for pts, rgb, ttl in self.point_groups:
                 col_func(*rgb)
                 dbg_draw_eng.scene_draw_points_pos(pts, dim=5.0)
             col_func(*rgb_white)
             dbg_draw_eng.scene_draw_lines(self.lines)
-            for lines, rgb in self.line_groups:
+            for lines, rgb, tll in self.line_groups:
                 col_func(*rgb)
                 dbg_draw_eng.scene_draw_lines(lines)
         
