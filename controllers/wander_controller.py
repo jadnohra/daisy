@@ -83,10 +83,10 @@ class WanderController:
     def _plan_lane_change(self, duration):
         target_lanes = self.car.location.curve.get_neighbor_lane_curves()
         if len(target_lanes) > 0:
-            initial_target_lane = target_lanes[0]
+            target_lane = target_lanes[0]
             start_pt = self.car.spatial.pos_road
             speed = max(self.car.dynamics.get_speed(), 5.0)
-            solution = solve_lane_change_trajectory(start_pt, initial_target_lane, speed, 2.0)
+            solution = solve_lane_change_trajectory(start_pt, target_lane, speed, 2.0)
             if solution is not None:
                 solution.link_to_last_target()
             return solution
@@ -97,21 +97,22 @@ class WanderController:
         loc = self.car.location
         target_lanes = loc.curve.get_neighbor_lane_curves()
         if len(target_lanes) > 0:
-            initial_target_lane = target_lanes[0]
+            target_lane = target_lanes[0]
             start_pt = self.car.spatial.pos_road
             speed = max(self.car.dynamics.get_speed(), 5.0)
+            distance = speed*duration
             end_t = loc.t + loc.curve.length_to_dt(loc.t, speed*duration)
-            print(speed*duration, loc.t, end_t)
-            # TODO use build_curve_by_length for both lanes to create boundary lanes of the right length!
-            interp_curve = build_sampled_interpolation_curve(loc.curve, initial_target_lane, 1.0, loc.t, end_t, loc.t, end_t)
-            link_solution = CurveBase.ChangeLaneSolution(None, initial_target_lane, end_t)
-            solution = LaneChangeTrajectorySolution(interp_curve.get_curve_sequence(), initial_target_lane, link_solution)
-            print(interp_curve.get_curve_sequence())
-            solution.link_to_last_target()
-            return interp_curve
+            print(speed, duration, speed*duration, loc.t, end_t)
+            source_lane_traj = build_curve_by_length(loc.curve, loc.t, distance)
+            self.car.scenario.dbg_draw.add_sampled_trajectory(source_lane_traj, [1,0,0], ttl=100)
+            print(source_lane_traj, start_pt, source_lane_traj.t_to_point(0), source_lane_traj.t_to_point(1))
+            target_lane_traj = build_curve_by_length(target_lane, loc.t, distance)
+            self.car.scenario.dbg_draw.add_sampled_trajectory(target_lane_traj, [1,0,0], ttl=100)
+            lane_change_traj = build_sampled_interpolation_curve(source_lane_traj, target_lane_traj)
+            self.car.scenario.dbg_draw.add_sampled_trajectory(lane_change_traj, [1,0,0], ttl=100)
+            return lane_change_traj
         else:
             return None
-
 
     def _execute_commands(self):
         if self._command_change_lane:
@@ -122,9 +123,9 @@ class WanderController:
                     if solution is not None:
                         self._reset_with_start_fragment(solution.trajectory)
                 else:
-                    trajectory = self._interpolate_lane_change(2.0)
+                    trajectory = self._interpolate_lane_change(4.0)
                     if trajectory is not None:
-                        self._reset_with_start_fragment(trajectory)
+                        self._reset_with_start_fragment([trajectory])
 
             else:
                 self.car.act.set_mode(self.car.act.Mode.CHANGE_LANE)

@@ -12,11 +12,12 @@ from sensors.lidar_sensor import LiDARSensor
 from .road_trajectory_component import RoadTrajectoryComponent
 
 class Car(ComponentBase):
-    def __init__(self, id=None, rgb=[1,1,1], lwh=[4.4,1.7,1.4]):
+    def __init__(self, id=None, rgb=[1,1,1], lwh=[4.4,1.7,1.4], scenario=None):
         ComponentBase.__init__(self)
         self.id = id
         self.rgb = rgb
         self.lwh = lwh
+        self.scenario = scenario
 
 class CarBuilder:
     def __init__(self, scenario, id=None):
@@ -72,7 +73,7 @@ class CarBuilder:
         
     def build(self):
         id = self.get('id') if self.get('id', None) is not None else self._scenario._gen_car_id()
-        car = Car(id=id, rgb=self.get('rgb', [1,1,1]))
+        car = Car(id=id, rgb=self.get('rgb', [1,1,1]), scenario=self._scenario)
         
         location = RoadLocationComponent()
         car.add_component('location', location)
