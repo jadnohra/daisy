@@ -29,9 +29,7 @@ class SequenceCurve(CurveBase):
             vec = np.subtract(curve.t_to_point(t), pt_world)
             return np.dot(vec, vec)
         closest_ts = [x.closest_t(pt_world) for x in self.curve_sequence]
-        print(closest_ts)
         closest_distsqs = [dist_sq(i, closest_ts[i]) for i in range(len(closest_ts))]
-        print(closest_distsqs)
         index = np.argmin(closest_distsqs)
         return self._normalize_t(index, closest_ts[index])
 
