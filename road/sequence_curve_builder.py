@@ -49,7 +49,6 @@ def build_sampled_interpolation_curve(curve_0, curve_1, seg_length=2.0,
         _link_curve_seq(segs)
     seq_curve = SequenceCurve(segs)
     if copy_outgoing_curve is not None:
-        print('QQQQ')
         _copy_outgoing_curves(seq_curve, copy_outgoing_curve)
     return seq_curve
 
