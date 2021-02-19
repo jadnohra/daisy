@@ -29,7 +29,7 @@ The name comes from the analogy that each single parameter instantiation grows m
     
 # Example Scenario
 - ./run_scenario.py lidar
-- ./run_param_server.py -scenario lidar -flow.frames 300 -flow.headed -flow.samples 12 -flow.threads 6
+- ./run_param_master.py -scenario lidar -flow.frames 300 -flow.headed -flow.samples 12 -flow.threads 6
 	- Note that a tiling window manager is recommended, since this will open many windows, and by default they will hide each other
 
 # Scenarios
