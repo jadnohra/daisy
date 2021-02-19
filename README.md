@@ -1,5 +1,7 @@
 ![image](./media/README.png)
-
+<p align="center">
+  <a href="https://youtu.be/-PC-AbEbrsE">Youtube Video</a>
+</p>
 
 # Daisy
 A prototype built to explore simulating dynamic nested parameter spaces for autonomous driving in a model-based manner, at a relatively high level of abstraction. 
