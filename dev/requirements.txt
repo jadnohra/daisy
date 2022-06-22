@@ -1,5 +1,5 @@
 mpmath==1.1.0
-numpy==1.16.4
+numpy==1.22.0
 parse==1.12.0
 py-spy==0.1.11
 pybullet==2.5.0
